@@ -1,0 +1,15 @@
+language: go
+
+go:
+  - tip
+
+notifications:
+	email:
+		recipients:
+			- alfred@villaroad.com
+		on_failure:
+			always
+		on_success:
+			change
+
+script: go test
