@@ -9,6 +9,8 @@
 package main
 
 import (
+	"code.google.com/p/go.net/websocket"
+
 	"bufio"
 	"bytes"
 	"compress/flate"
@@ -26,6 +28,15 @@ import (
 	"strings"
 	"time"
 )
+
+// beginnings of a an outbound websocket client using channels
+type WebSocket struct {
+	id     int
+	ws     *websocket.Conn
+	server *Server
+	ch     chan *Message
+	doneCh chan bool
+}
 
 // Request is the core struct and entry point for creating connection objects
 type Request struct {
@@ -76,6 +87,87 @@ type Error struct {
 	timeout bool
 	Err     error
 }
+
+// func NewWebSocketClient(ws *websocket.Conn, server *Server) *WebSocket {
+
+// 	if ws == nil {
+// 		panic("ws cannot be nil")
+// 	}
+
+// 	if server == nil {
+// 		panic("server cannot be nil")
+// 	}
+
+// 	maxId++
+// 	ch := make(chan *Message, channelBufSize)
+// 	doneCh := make(chan bool)
+
+// 	return &WebSocket{maxId, ws, server, ch, doneCh}
+// }
+
+// func (c *WebSocket) Conn() *websocket.Conn {
+// 	return c.ws
+// }
+
+// func (c *WebSocket) Write(msg *Message) {
+// 	select {
+// 	case c.ch <- msg:
+// 	default:
+// 		c.server.Del(c)
+// 		err := fmt.Errorf("client %d is disconnected.", c.id)
+// 		c.server.Err(err)
+// 	}
+// }
+
+// func (c *WebSocket) Done() {
+// 	c.doneCh <- true
+// }
+
+// func (c *WebSocket) Listen() {
+// 	go c.listenWrite()
+// 	c.listenRead()
+// }
+
+// func (c *WebSocket) listenWrite() {
+// 	log.Println("Listening write to client")
+// 	for {
+// 		select {
+
+// 		case msg := <-c.ch:
+// 			log.Println("Send:", msg)
+// 			websocket.JSON.Send(c.ws, msg)
+
+// 		case <-c.doneCh:
+// 			c.server.Del(c)
+// 			c.doneCh <- true
+// 			return
+// 		}
+// 	}
+// }
+
+// func (c *WebSocket) listenRead() {
+// 	log.Println("Listening read from client")
+// 	for {
+// 		select {
+
+// 		case <-c.doneCh:
+// 			c.server.Del(c)
+// 			c.doneCh <- true
+// 			return
+
+// 		default:
+// 			var msg Message
+// 			err := websocket.JSON.Receive(c.ws, &msg)
+// 			if err == io.EOF {
+// 				c.doneCh <- true
+// 			} else if err != nil {
+// 				c.server.Err(err)
+// 			} else {
+// 				c.server.SendAll(&msg)
+// 			}
+// 		}
+// 	}
+// }
 
 // helper to cover all the redirect types
 func isActualRedirect(status int) bool {
