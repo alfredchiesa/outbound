@@ -120,6 +120,17 @@ func (r Request) Send() (*Response, error) {
 	var transport = defaultTransport
 	var client = defaultClient
 
+	if r.Insecure {
+		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	} else if transport.TLSClientConfig != nil {
+		transport.TLSClientConfig.InsecureSkipVerify = false
+	}
+
+	b, e := prepareRequestBody(r.Body)
+	if e != nil {
+		return nil, &Error{Err: e}
+	}
+
 	if r.QueryString != nil {
 		param, e := paramParse(r.QueryString)
 		if e != nil {
@@ -129,6 +140,22 @@ func (r Request) Send() (*Response, error) {
 	}
 
 	var bodyReader io.Reader
+	if b != nil && r.Compression != nil {
+		buffer := bytes.NewBuffer([]byte{})
+		readBuffer := bufio.NewReader(b)
+		writer, err := r.Compression.writer(buffer)
+		if err != nil {
+			return nil, &Error{Err: err}
+		}
+		_, e = readBuffer.WriteTo(writer)
+		writer.Close()
+		if e != nil {
+			return nil, &Error{Err: e}
+		}
+		bodyReader = buffer
+	} else {
+		bodyReader = b
+	}
 	req, er = http.NewRequest(r.Method, r.Uri, bodyReader)
 
 	if er != nil {
@@ -139,12 +166,10 @@ func (r Request) Send() (*Response, error) {
 	req.Header.Add("User-Agent", r.UserAgent)
 	req.Header.Add("Content-Type", r.ContentType)
 	req.Header.Add("Accept", r.Accept)
-
 	if r.Compression != nil {
 		req.Header.Add("Content-Encoding", r.Compression.ContentEncoding)
 		req.Header.Add("Accept-Encoding", r.Compression.ContentEncoding)
 	}
-
 	if r.headers != nil {
 		for _, header := range r.headers {
 			req.Header.Add(header.name, header.value)
@@ -184,7 +209,7 @@ func (r Request) Send() (*Response, error) {
 		return nil, &Error{timeout: timeout, Err: err}
 	}
 
-	if redirectSanitizer(res.StatusCode) && r.MaxRedirects > 0 {
+	if isRedirect(res.StatusCode) && r.MaxRedirects > 0 {
 		loc, _ := res.Location()
 		r.MaxRedirects--
 		r.Uri = loc.String()
@@ -202,7 +227,7 @@ func (r Request) Send() (*Response, error) {
 	}
 }
 
-func redirectSanitizer(status int) bool {
+func isRedirect(status int) bool {
 	switch status {
 	case http.StatusMovedPermanently:
 		return true
