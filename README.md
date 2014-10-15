@@ -1,8 +1,31 @@
 # outbound
 [![Build Status](https://travis-ci.org/alfredchiesa/outbound.svg?branch=master)](https://travis-ci.org/alfredchiesa/outbound)  
-outbound is a simple abstraction of a couple of standard golang packages. It will allow for dirt simple network requests, similar to that of the [Requests](https://github.com/kennethreitz/requests/) library for python.
+outbound is a multi-function http client for Golang. Yet another, if you will. I took a lot of best practices from various other libraries and combined their paradigms into a easy to use, but full featured, outbound http client.
 
-There are many other network clients available for Go, but none really seemed to fit my work flow. I'm starting this to build something, selfishly. To help my life easier. If you can use it to help make your life easier, please use and PR.
+It will allow for dirt simple network requests, similar to that of the [Requests](https://github.com/kennethreitz/requests/) library for python.
+
+The package is a *work in progress*, and is considered stable enough for use. I see no major changes coming to the Request type. However, the WebSocket and UDP types will be in a state of flux for a while.
+
+**Table of Contents**
+
+- [outbound](#outbound)
+  - [Dependencies](#dependencies)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [REST Verbs](#rest-verbs)
+      - [GET](#get)
+      - [PUT](#put)
+      - [POST](#post)
+      - [PATCH](#patch)
+      - [DELETE](#delete)
+      - [OPTIONS](#options)
+    - [Basic Auth](#basic-auth)
+    - [Reflection Helper Methods](#reflection-helper-methods)
+      - [Response Body JSON to Struct](#response-body-json-to-struct)
+      - [Response Body to String](#response-body-to-string)
+    - [Custom Headers](#custom-headers)
+    - [Websocket](#websocket)
+  - [Road map](#road-map)
 
 ##Dependencies
 There is only one dependency at the moment, [websocket](https://code.google.com/p/go/source/checkout?repo=net). I hear rumor that it will make it's way into stdlib. Although, I wouldn't hold your breath for that. To install *websocket*, you can use your current deps manager or just runt the following:
@@ -13,6 +36,7 @@ There is only one dependency at the moment, [websocket](https://code.google.com/
     $ go get github.com/alfredchiesa/outbound
 
 ##Usage
+###REST Verbs
 ####GET
 If you just want to fire off a simple GET request:
 ```go
@@ -123,7 +147,7 @@ res, err := outbound.Request{
 }.Send()
 ```
 
-####Basic Auth
+###Basic Auth
 ```go
 client := outbound.Request{
     Method:        "GET",
@@ -135,7 +159,8 @@ client := outbound.Request{
 res, err := client.Send()
 ```
 
-####Reflecting JSON Response Body to Struct
+###Reflection Helper Methods
+####Response Body JSON to Struct
 ```go
 type User struct {
     Name string
@@ -148,14 +173,14 @@ res, err := outbound.Request{URI: "http://api.someserver.com/user/carl"}.Send()
 res.Body.JsonToStruct(&User)
 ```
 
-####Reflecting Response Body to String
+####Response Body to String
 ```go
 res, err := outbound.Request{URI: "http://api.someserver.com/user/carl"}.Send()
 
 fmt.Println(res.Body.ToString())
 ```
 
-####Custom Headers
+###Custom Headers
 ```go
 client := outbound.Request{
     Method:        "GET",
@@ -163,8 +188,21 @@ client := outbound.Request{
 }
 
 client.AddHeader("X-CUSTOM-HEADER", "billions of billions")
+client.AddHeader("X-ANOTHER-HEADER", "trillions of trillions")
 
 res, err := client.Send()
+```
+
+###Websocket
+The current implementation is littered with bugs that I haven't fixed yet, so it's currently *Out of Order*. I will come back to fix this soon, just not now.
+```go
+ws, err := outbound.WebSocket{
+    Server: "127.0.0.1:443",
+}.Conn()
+
+ws.Write("stuff")
+
+ws.Close()
 ```
 
 ## Road map
