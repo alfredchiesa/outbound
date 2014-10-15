@@ -140,6 +140,21 @@ func (r Request) Send() (*Response, error) {
 		timer.Stop()
 	}
 
+	if err != nil {
+		if !timeout {
+			switch err := err.(type) {
+			case *net.OpError:
+				timeout = err.Timeout()
+			case *url.Error:
+				if op, ok := err.Err.(*net.OpError); ok {
+					timeout = op.Timeout()
+				}
+			}
+		}
+
+		return nil, &Error{timeout: timeout, Err: err}
+	}
+
 	if redirectSanitizer(res.StatusCode) && r.MaxRedirects > 0 {
 		loc, _ := res.Location()
 		r.MaxRedirects--
@@ -147,6 +162,15 @@ func (r Request) Send() (*Response, error) {
 		return r.Send()
 	}
 
+	if r.Compression != nil && strings.Contains(res.Header.Get("Content-Encoding"), r.Compression.ContentEncoding) {
+		compressedReader, err := r.Compression.reader(res.Body)
+		if err != nil {
+			return nil, &Error{Err: err}
+		}
+		return &Response{StatusCode: res.StatusCode, ContentLength: res.ContentLength, Header: res.Header, Body: &Body{reader: res.Body, compressedReader: compressedReader}}, nil
+	} else {
+		return &Response{StatusCode: res.StatusCode, ContentLength: res.ContentLength, Header: res.Header, Body: &Body{reader: res.Body}}, nil
+	}
 }
 
 func redirectSanitizer(status int) bool {
