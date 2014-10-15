@@ -4,7 +4,7 @@
 //
 // The package is a work in progress, and is considered stable enough for use. I see no
 // major structure changes coming to the Request type. However, a new UDP type is in the
-// works and will be inside a separate branch. Along with the
+// works and will be inside a separate branch
 
 package main
 
@@ -119,7 +119,7 @@ type Error struct {
 // 	}
 // }
 
-// func (c *WebSocket) Done() {
+// func (c *WebSocket) Close() {
 // 	c.doneCh <- true
 // }
 
