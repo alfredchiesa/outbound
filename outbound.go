@@ -140,11 +140,26 @@ func (r Request) Send() (*Response, error) {
 		timer.Stop()
 	}
 
-	if isRedirect(res.StatusCode) && r.MaxRedirects > 0 {
+	if redirectSanitizer(res.StatusCode) && r.MaxRedirects > 0 {
 		loc, _ := res.Location()
 		r.MaxRedirects--
 		r.Uri = loc.String()
 		return r.Send()
 	}
 
+}
+
+func redirectSanitizer(status int) bool {
+	switch status {
+	case http.StatusMovedPermanently:
+		return true
+	case http.StatusFound:
+		return true
+	case http.StatusSeeOther:
+		return true
+	case http.StatusTemporaryRedirect:
+		return true
+	default:
+		return false
+	}
 }
