@@ -1,3 +1,11 @@
+// Package outbound is a multi-function http client for Golang. Yet another, if you will. I
+// took a lot of best practices from various other libraries and combined their paradigms
+// into a easy to use, but full featured, outbound http client.
+//
+// The package is a work in progress, and is considered stable enough for use. I see no
+// major structure changes coming to the Request type. However, a new UDP type is in the
+// works and will be inside a separate branch. Along with the
+
 package main
 
 import (
@@ -19,23 +27,32 @@ import (
 	"time"
 )
 
+// Request is the core struct and entry point for creating connection objects
 type Request struct {
 	Host          string
 	UserAgent     string
 	SSL           bool
 	MaxRedirects  int
-	Compression   *compression
 	BasicAuthUser string
 	BasicAuthPass string
-	headers       []httpHeader
 	Method        string
-	Body          interface{}
-	QueryString   interface{}
-	Timeout       time.Duration
 	ContentType   string
 	Accept        string
 	Uri           string
 	Proxy         string
+	Body          interface{}
+	QueryString   interface{}
+	Compression   *compression
+	headers       []httpHeader
+	Timeout       time.Duration
+}
+
+// Response is a container type that is used to ease of marshaling in the response
+type Response struct {
+	Body          *Body
+	StatusCode    int
+	Header        http.Header
+	ContentLength int64
 }
 
 // all compression stuffs: https://github.com/rcoh/modata/blob/704c7b25baa2173d6a62403d4dc88b7a7f506727/src/diskv/compression.go
@@ -43,13 +60,6 @@ type compression struct {
 	reader   func(buffer io.Reader) (io.ReadCloser, error)
 	writer   func(buffer io.Writer) (io.WriteCloser, error)
 	Encoding string
-}
-
-type Response struct {
-	Body          *Body
-	StatusCode    int
-	Header        http.Header
-	ContentLength int64
 }
 
 type httpHeader struct {
@@ -101,14 +111,17 @@ func (b *Body) Read(p []byte) (int, error) {
 	if b.compressed != nil {
 		return b.compressed.Read(p)
 	}
+
 	return b.reader.Read(p)
 }
 
 func (b *Body) Close() error {
 	err := b.reader.Close()
+
 	if b.compressed != nil {
 		return b.compressed.Close()
 	}
+
 	return err
 }
 
@@ -124,9 +137,11 @@ func (b *Body) JsonToStruct(o interface{}) error {
 
 func (b *Body) ToString() (string, error) {
 	body, err := ioutil.ReadAll(b)
+
 	if err != nil {
 		return "", err
 	}
+
 	return string(body), nil
 }
 
@@ -135,10 +150,16 @@ func Gzip() *compression {
 	reader := func(buffer io.Reader) (io.ReadCloser, error) {
 		return gzip.NewReader(buffer)
 	}
+
 	writer := func(buffer io.Writer) (io.WriteCloser, error) {
 		return gzip.NewWriter(buffer), nil
 	}
-	return &compression{writer: writer, reader: reader, Encoding: "gzip"}
+
+	return &compression{
+		writer:   writer,
+		reader:   reader,
+		Encoding: "gzip",
+	}
 }
 
 // https://github.com/shelakel/go-middleware/blob/e692288c2317fe9256547a7d28007fb1afc7db03/compression/deflate.go
@@ -146,10 +167,16 @@ func Deflate() *compression {
 	reader := func(buffer io.Reader) (io.ReadCloser, error) {
 		return flate.NewReader(buffer), nil
 	}
+
 	writer := func(buffer io.Writer) (io.WriteCloser, error) {
 		return flate.NewWriter(buffer, -1)
 	}
-	return &compression{writer: writer, reader: reader, Encoding: "deflate"}
+
+	return &compression{
+		writer:   writer,
+		reader:   reader,
+		Encoding: "deflate",
+	}
 }
 
 // https://github.com/rcoh/modata/blob/704c7b25baa2173d6a62403d4dc88b7a7f506727/src/diskv/compression.go
@@ -160,7 +187,11 @@ func Zlib() *compression {
 	writer := func(buffer io.Writer) (io.WriteCloser, error) {
 		return zlib.NewWriter(buffer), nil
 	}
-	return &compression{writer: writer, reader: reader, Encoding: "deflate"}
+	return &compression{
+		writer:   writer,
+		reader:   reader,
+		Encoding: "deflate",
+	}
 }
 
 // https://github.com/gustavo-hms/trama/blob/b7b94a4d7a90475aa2e51db723605dfb70f52dc1/param_decoder.go
@@ -228,8 +259,13 @@ func (r Request) Send() (*Response, error) {
 			return nil, &Error{Err: err}
 		}
 		if proxyTransport == nil {
-			proxyTransport = &http.Transport{Dial: outboundDialer.Dial, Proxy: http.ProxyURL(proxyUrl)}
-			proxyClient = &http.Client{Transport: proxyTransport}
+			proxyTransport = &http.Transport{
+				Dial:  outboundDialer.Dial,
+				Proxy: http.ProxyURL(proxyUrl),
+			}
+			proxyClient = &http.Client{
+				Transport: proxyTransport,
+			}
 		} else {
 			proxyTransport.Proxy = http.ProxyURL(proxyUrl)
 		}
@@ -238,7 +274,9 @@ func (r Request) Send() (*Response, error) {
 	}
 
 	if !r.SSL {
-		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		transport.TLSClientConfig = &tls.Config{
+			InsecureSkipVerify: true,
+		}
 	} else if transport.TLSClientConfig != nil {
 		transport.TLSClientConfig.InsecureSkipVerify = false
 	}
@@ -345,14 +383,27 @@ func (r Request) Send() (*Response, error) {
 		if err != nil {
 			return nil, &Error{Err: err}
 		}
-		return &Response{StatusCode: res.StatusCode, ContentLength: res.ContentLength, Header: res.Header, Body: &Body{reader: res.Body, compressed: compressed}}, nil
+		return &Response{
+			StatusCode:    res.StatusCode,
+			ContentLength: res.ContentLength,
+			Header:        res.Header,
+			Body: &Body{
+				reader:     res.Body,
+				compressed: compressed,
+			}}, nil
 	} else {
-		return &Response{StatusCode: res.StatusCode, ContentLength: res.ContentLength, Header: res.Header, Body: &Body{reader: res.Body}}, nil
+		return &Response{
+			StatusCode:    res.StatusCode,
+			ContentLength: res.ContentLength,
+			Header:        res.Header,
+			Body: &Body{
+				reader: res.Body,
+			}}, nil
 	}
 }
 
 func main() {
-	res, _ := Request{Uri: "http://www.google.com"}.Send()
+	res, _ := Request{Uri: "http://villaroad.com"}.Send()
 
 	fmt.Printf(res.Body.ToString())
 }

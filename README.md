@@ -4,6 +4,13 @@ outbound is a simple abstraction of a couple of standard golang packages. It wil
 
 There are many other network clients available for Go, but none really seemed to fit my work flow. I'm starting this to build something, selfishly. To help my life easier. If you can use it to help make your life easier, please use and PR.
 
+##Dependencies
+There is only one dependency at the moment, **websocket**. I hear rumor that it will make it's way into stdlib though. Although, I wouldn't hold your breath for that.
+
+```bash
+go get code.google.com/p/go.net/websocket
+```
+
 ## Road map
 Starting off with nothing at the moment and going to see if we can add a ton of stuff. I want to make sure that I get a basic client working first, with a basic structure of how the client feels. Then work on other, more advanced stuff.
 
