@@ -9,7 +9,7 @@
 package main
 
 import (
-	"code.google.com/p/go.net/websocket"
+	// "code.google.com/p/go.net/websocket"
 
 	"bufio"
 	"bytes"
@@ -30,13 +30,13 @@ import (
 )
 
 // beginnings of a an outbound websocket client using channels
-type WebSocket struct {
-	id     int
-	ws     *websocket.Conn
-	server *Server
-	ch     chan *Message
-	doneCh chan bool
-}
+// type WebSocket struct {
+// 	id     int
+// 	ws     *websocket.Conn
+// 	server *Server
+// 	ch     chan *Message
+// 	doneCh chan bool
+// }
 
 // Request is the core struct and entry point for creating connection objects
 type Request struct {
