@@ -493,10 +493,3 @@ func (r Request) Send() (*Response, error) {
 			}}, nil
 	}
 }
-
-func main() {
-	res, _ := Request{URI: "http://villaroad.com"}.Send()
-
-	fmt.Printf(res.Body.ToString())
-
-}
