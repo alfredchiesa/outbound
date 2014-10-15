@@ -121,6 +121,16 @@ func (r Request) Send() (*Response, error) {
 	var client = defaultClient
 
 	if r.Proxy != "" {
+		proxyUrl, err := url.Parse(r.Proxy)
+		if err != nil {
+			return nil, &Error{Err: err}
+		}
+		if proxyTransport == nil {
+			proxyTransport = &http.Transport{Dial: defaultDialer.Dial, Proxy: http.ProxyURL(proxyUrl)}
+			proxyClient = &http.Client{Transport: proxyTransport}
+		} else {
+			proxyTransport.Proxy = http.ProxyURL(proxyUrl)
+		}
 		transport = proxyTransport
 		client = proxyClient
 	}
