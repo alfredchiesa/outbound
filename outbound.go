@@ -135,6 +135,20 @@ func (r Request) Send() (*Response, error) {
 		return nil, &Error{Err: er}
 	}
 
+	req.Host = r.Host
+	req.Header.Add("User-Agent", r.UserAgent)
+	req.Header.Add("Content-Type", r.ContentType)
+	req.Header.Add("Accept", r.Accept)
+
+	timeout := false
+	var timer *time.Timer
+	if r.Timeout > 0 {
+		timer = time.AfterFunc(r.Timeout, func() {
+			transport.CancelRequest(req)
+			timeout = true
+		})
+	}
+
 	res, err := client.Do(req)
 	if timer != nil {
 		timer.Stop()
