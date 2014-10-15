@@ -140,6 +140,21 @@ func (r Request) Send() (*Response, error) {
 	req.Header.Add("Content-Type", r.ContentType)
 	req.Header.Add("Accept", r.Accept)
 
+	if r.Compression != nil {
+		req.Header.Add("Content-Encoding", r.Compression.ContentEncoding)
+		req.Header.Add("Accept-Encoding", r.Compression.ContentEncoding)
+	}
+
+	if r.headers != nil {
+		for _, header := range r.headers {
+			req.Header.Add(header.name, header.value)
+		}
+	}
+
+	if r.BasicAuthUsername != "" && r.BasicAuthPassword != "" {
+		req.SetBasicAuth(r.BasicAuthUsername, r.BasicAuthPassword)
+	}
+
 	timeout := false
 	var timer *time.Timer
 	if r.Timeout > 0 {
