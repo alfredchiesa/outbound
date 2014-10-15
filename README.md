@@ -190,11 +190,10 @@ cookie methods | :blue_book:
 gzip | :green_book:
 timeouts | :green_book:
 UDP method | :ledger:
+Web Socket | :blue_book:
 connection pooling | :ledger:
 
   >**key**  
   >:green_book: = done  
   >:blue_book: = doing  
   >:ledger: = not started  
-
-
