@@ -9,23 +9,23 @@ Starting off with nothing at the moment and going to see if we can add a ton of 
 
 Feature | Status
 ------- |:------:
-define client method structure | :blue_book:
-GET method | :blue_book:
-PUT method | :ledger:
-POST method | :ledger:
-PATCH method | :ledger:
-DELETE method | :ledger:
-OPTIONS method | :ledger:
-implement logging | :ledger:
+define client method structure | :green_book:
+GET method | :green_book:
+PUT method | :green_book:
+POST method | :green_book:
+PATCH method | :blue_book:
+DELETE method | :green_book:
+OPTIONS method | :blue_book:
+implement logging | :blue_book:
 documentation | :ledger:
-dynamically add headers | :ledger:
+dynamically add headers | :green_book:
 keep-alive | :ledger:
-basic-auth | :ledger:
-json reflection helper | :ledger:
-string reflection helper | :ledger:
-cookie methods | :ledger:
-gzip | :ledger:
-timeouts | :ledger:
+basic-auth | :green_book:
+json reflection helper | :green_book:
+string reflection helper | :green_book:
+cookie methods | :blue_book:
+gzip | :green_book:
+timeouts | :green_book:
 UDP method | :ledger:
 connection pooling | :ledger:
 
