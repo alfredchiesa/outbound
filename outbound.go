@@ -120,6 +120,11 @@ func (r Request) Send() (*Response, error) {
 	var transport = defaultTransport
 	var client = defaultClient
 
+	if r.Proxy != "" {
+		transport = proxyTransport
+		client = proxyClient
+	}
+
 	if r.Insecure {
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	} else if transport.TLSClientConfig != nil {
