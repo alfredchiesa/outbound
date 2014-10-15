@@ -38,7 +38,7 @@ type Request struct {
 	Method        string
 	ContentType   string
 	Accept        string
-	Uri           string
+	URI           string
 	Proxy         string
 	Body          interface{}
 	QueryString   interface{}
@@ -292,7 +292,7 @@ func (r Request) Send() (*Response, error) {
 		if e != nil {
 			return nil, &Error{Err: e}
 		}
-		r.Uri = r.Uri + "?" + param
+		r.URI = r.URI + "?" + param
 	}
 
 	var bodyReader io.Reader
@@ -313,7 +313,7 @@ func (r Request) Send() (*Response, error) {
 	} else {
 		bodyReader = b
 	}
-	req, er = http.NewRequest(r.Method, r.Uri, bodyReader)
+	req, er = http.NewRequest(r.Method, r.URI, bodyReader)
 
 	if er != nil {
 		// we couldn't parse the URL.
@@ -374,7 +374,7 @@ func (r Request) Send() (*Response, error) {
 	if isActualRedirect(res.StatusCode) && r.MaxRedirects > 0 {
 		loc, _ := res.Location()
 		r.MaxRedirects--
-		r.Uri = loc.String()
+		r.URI = loc.String()
 		return r.Send()
 	}
 
@@ -403,7 +403,8 @@ func (r Request) Send() (*Response, error) {
 }
 
 func main() {
-	res, _ := Request{Uri: "http://villaroad.com"}.Send()
+	res, _ := Request{URI: "http://villaroad.com"}.Send()
 
 	fmt.Printf(res.Body.ToString())
+
 }
