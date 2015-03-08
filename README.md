@@ -1,5 +1,4 @@
-# outbound
-[![Build Status](https://travis-ci.org/alfredchiesa/outbound.svg?branch=master)](https://travis-ci.org/alfredchiesa/outbound)  
+![outbound github banner](http://i.imgur.com/FfWlGmx.png)
 outbound is a multi-function http client for Golang. Yet another, if you will. I took a lot of best practices from various other libraries and combined their paradigms into a easy to use, but full featured, outbound http client.
 
 It will allow for dirt simple network requests, similar to that of the [Requests](https://github.com/kennethreitz/requests/) library for python.
@@ -26,6 +25,10 @@ The package is a *work in progress*, and is considered stable enough for use. I 
     - [Custom Headers](#custom-headers)
     - [Websocket](#websocket)
   - [Road map](#road-map)
+
+##Build Status
+[![Build Status](https://travis-ci.org/alfredchiesa/outbound.svg?branch=master)](https://travis-ci.org/alfredchiesa/outbound)  
+outbound is currently built on the free continuous integration stack/site known as [Travis](https://travis-ci.org). To view the build history you can either click the button above or [this link](https://travis-ci.org/alfredchiesa/outbound).
 
 ##Dependencies
 There is only one dependency at the moment, [websocket](https://code.google.com/p/go/source/checkout?repo=net). I hear rumor that it will make it's way into stdlib. Although, I wouldn't hold your breath for that. To install *websocket*, you can use your current deps manager or just runt the following:
