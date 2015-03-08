@@ -1,4 +1,4 @@
-![outbound github banner](http://i.imgur.com/FfWlGmx.png)
+![outbound github banner](http://i.imgur.com/zQn16Q0.png)
 outbound is a multi-function http client for Golang. Yet another, if you will. I took a lot of best practices from various other libraries and combined their paradigms into a easy to use, but full featured, outbound http client.
 
 It will allow for dirt simple network requests, similar to that of the [Requests](https://github.com/kennethreitz/requests/) library for python.
