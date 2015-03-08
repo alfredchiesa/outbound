@@ -31,6 +31,7 @@ This package is a continual *work in progress*, and is considered stable enough 
       - [Response Body JSON to Struct](#response-body-json-to-struct)
       - [Response Body to String](#response-body-to-string)
     - [Custom Headers](#custom-headers)
+    - - [Unix Socket](#unixsocket)
     - [Websocket](#websocket)
   - [Road map](#road-map)
 
