@@ -1,7 +1,14 @@
 ![outbound github banner](http://i.imgur.com/Dl7vPVe.png)
 outbound is a multi-function http client for Golang. Yet another, if you will. It borrows a lot of *best* practices from various other packages and clients. It combines their paradigms into a easy to use, but full featured, outbound http client.
 
-Much of the inspiration is derived from the Python [Requests](https://github.com/kennethreitz/requests/) package. 
+Much of the inspiration (*and slogan*) is derived from the Python [Requests](https://github.com/kennethreitz/requests/) package. It abides by [PEP 20](https://www.python.org/dev/peps/pep-0020/), which is also known as the Zen of Python:
+```go
+1. Beautiful is better than ugly.
+2. Explicit is better than implicit.
+3. Simple is better than complex.
+4. Complex is better than complicated.
+5. Readability counts.
+```
 
 This package is a continual *work in progress*, and is considered stable enough for use. I see no major API changes coming to the **Request** type any time soon. However, the WebSocket and UDP types are not completely fleshed out as of `March 7, 2015`.
 
@@ -196,6 +203,9 @@ client.AddHeader("X-ANOTHER-HEADER", "trillions of trillions")
 
 res, err := client.Send()
 ```
+
+###Unix Socket
+This is on my todo list. Seems like using Unix sockets, if you are on a system that can, is the better and more reliable approach here. I plan to implement them and offer the option. More to come soon.
 
 ###Websocket
 The current implementation is littered with bugs that I haven't fixed yet, so it's currently *Out of Order*. I will come back to fix this soon, just not now.
