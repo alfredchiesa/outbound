@@ -1,13 +1,14 @@
 ![outbound github banner](http://i.imgur.com/Dl7vPVe.png)
-outbound is a multi-function http client for Golang. Yet another, if you will. I took a lot of best practices from various other libraries and combined their paradigms into a easy to use, but full featured, outbound http client.
+outbound is a multi-function http client for Golang. Yet another, if you will. It borrows a lot of *best* practices from various other packages and clients. It combines their paradigms into a easy to use, but full featured, outbound http client.
 
-It will allow for dirt simple network requests, similar to that of the [Requests](https://github.com/kennethreitz/requests/) library for python.
+Much of the inspiration is derived from the Python [Requests](https://github.com/kennethreitz/requests/) package. 
 
-The package is a *work in progress*, and is considered stable enough for use. I see no major changes coming to the Request type. However, the WebSocket and UDP types will be in a state of flux for a while.
+This package is a continual *work in progress*, and is considered stable enough for use. I see no major API changes coming to the **Request** type any time soon. However, the WebSocket and UDP types are not completely fleshed out as of `March 7, 2015`.
 
 **Table of Contents**
 
 - [outbound](#outbound)
+  - [Status](#status)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
   - [Usage](#usage)
@@ -26,14 +27,14 @@ The package is a *work in progress*, and is considered stable enough for use. I 
     - [Websocket](#websocket)
   - [Road map](#road-map)
 
-##Build Status
+##Status
 [![Build Status](https://travis-ci.org/alfredchiesa/outbound.svg?branch=master)](https://travis-ci.org/alfredchiesa/outbound)  
 outbound is currently built on the free continuous integration stack/site known as [Travis](https://travis-ci.org). To view the build history you can either click the button above or [this link](https://travis-ci.org/alfredchiesa/outbound).
 
 ##Dependencies
-There is only one dependency at the moment, [websocket](https://code.google.com/p/go/source/checkout?repo=net). I hear rumor that it will make it's way into stdlib. Although, I wouldn't hold your breath for that. To install *websocket*, you can use your current deps manager or just runt the following:
+At the moment, there is only one dependency; [websocket](https://godoc.org/golang.org/x/net/websocket). I hear rumor that it will make it's way into stdlib. To install *websocket*, you can use your current deps manager or just runt the following:
 
-    $ go get code.google.com/p/go.net/websocket
+    $ go get golang.org/x/net/websocket
 
 ##Installation
     $ go get github.com/alfredchiesa/outbound
